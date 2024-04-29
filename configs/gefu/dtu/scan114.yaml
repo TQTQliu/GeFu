@@ -1,0 +1,13 @@
+parent_cfg: configs/gefu/dtu_pretrain.yaml
+exp_name: dtu_ft_scan114
+gefu:
+    test_input_views: 4
+train_dataset:
+    scene: scan114
+test_dataset:
+    scene: scan114
+train:
+    epoch: 222 # pretrained epoch + 6
+    lr: 5e-5
+save_ep: 1
+eval_ep: 1

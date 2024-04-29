@@ -1,0 +1,17 @@
+parent_cfg: configs/gefu/nerf_eval.yaml
+exp_name: nerf_ft_drums
+gefu:
+    test_input_views: 4
+    train_input_views: [3, 4]
+    train_input_views_prob: [0.4, 0.6]
+    cas_config:
+        render_if: [True, True]
+train_dataset:
+    scene: drums
+test_dataset:
+    scene: drums
+train:
+    epoch: 222 # pretrained epoch + 6
+    lr: 5e-5 
+save_ep: 1
+eval_ep: 1

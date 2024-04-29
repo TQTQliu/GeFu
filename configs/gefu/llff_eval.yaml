@@ -1,0 +1,26 @@
+parent_cfg: configs/gefu/dtu_pretrain.yaml
+
+train_dataset_module: lib.datasets.llff.gefu
+test_dataset_module: lib.datasets.llff.gefu
+
+gefu:
+    eval_center: True
+    reweighting: True
+    cas_config:
+        render_if: [True, True]
+        volume_planes: [32, 8]
+
+train_dataset:
+    data_root: 'nerf_llff_data' 
+    split: 'train'
+    # input_h_w: [640, 960] # OOM for RTX 3090
+    input_h_w: [512, 640]
+    batch_size: 1
+    input_ratio: 1.
+
+test_dataset:
+    data_root: 'nerf_llff_data' 
+    split: 'test'
+    batch_size: 1
+    input_h_w: [640, 960]
+    input_ratio: 1.
