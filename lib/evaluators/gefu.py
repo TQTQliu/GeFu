@@ -94,14 +94,14 @@ class Evaluator:
                     self.scene_lpips[batch['meta']['scene'][b]+f'_level{i}'] = []
                 if cfg.save_result and i == 1:
                     # #### depth maps:
-                    # nerf_gt_depth = output['depth_level1'].cpu().numpy()[b].reshape((h, w))
+                    # nerf_depth = output['depth_level1'].cpu().numpy()[b].reshape((h, w))
                     # depth_minmax = [
                     #     batch["near_far"].min().detach().cpu().numpy(),
                     #     batch["near_far"].max().detach().cpu().numpy(),
                     # ]
-                    # rendered_depth_vis, _ = visualize_depth(nerf_gt_depth, depth_minmax)
+                    # rendered_depth_vis, _ = visualize_depth(nerf_depth, depth_minmax)
                     # rendered_depth_vis = rendered_depth_vis.permute(1,2,0).detach().cpu().numpy()
-                    # img = rendered_depth_vis * masks[0][...,None]
+                    # img = rendered_depth_vis#* masks[0][...,None]
                     
                     img = img_utils.horizon_concate(gt_rgb[b], pred_rgb[b])
                     img_path = os.path.join(cfg.result_dir, '{}_{}_{}.png'.format(batch['meta']['scene'][b], batch['meta']['tar_view'][b].item(), batch['meta']['frame_id'][b].item()))
