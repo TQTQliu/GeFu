@@ -11,7 +11,7 @@ os.environ['workspace'] = "."
 cfg.workspace = os.environ['workspace']
 print('Workspace: ', cfg.workspace)
 
-# extract_mesh
+
 cfg.level = 32.
 cfg.resolution = 256
 

@@ -1,5 +1,5 @@
 from lib.config import cfg, args
-from lib.utils.pc_utils import *
+from lib.utils.ply_utils import *
 import numpy as np
 import os
 import glob
@@ -128,6 +128,31 @@ def run_evaluate():
             ply_path = os.path.join(data_dir, f'{scene}.ply')
             print(f'saving {ply_path}')
             storePly(ply_path, vertexs, vertex_colors)
+            
+            ## point cloud --> mesh
+            import open3d as o3d
+            import trimesh
+            pcd = o3d.io.read_point_cloud(ply_path)
+            pcd.estimate_normals()
+            
+            # estimate radius for rolling ball
+            distances = pcd.compute_nearest_neighbor_distance()
+            avg_dist = np.mean(distances)
+            radius = 1.5 * avg_dist   
+
+            mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(
+                    pcd,
+                    o3d.utility.DoubleVector([radius, radius * 2]))
+            
+            # create the triangular mesh with the vertices and faces from open3d
+            tri_mesh = trimesh.Trimesh(np.asarray(mesh.vertices), np.asarray(mesh.triangles),
+                                    vertex_normals=np.asarray(mesh.vertex_normals))
+            
+            trimesh.convex.is_convex(tri_mesh)
+            ply_path = os.path.join(data_dir, f'{scene}_mesh.ply')
+            trimesh.exchange.export.export_mesh(tri_mesh, ply_path)
+            
+
                 
 if __name__ == '__main__':
     globals()['run_' + args.type]()
