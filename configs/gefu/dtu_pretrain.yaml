@@ -13,6 +13,7 @@ evaluator_module: lib.evaluators.gefu
 save_result: True
 eval_lpips: True
 save_video: False
+save_ply: False
 
 
 # task config

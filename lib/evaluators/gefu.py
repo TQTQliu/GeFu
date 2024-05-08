@@ -1,6 +1,7 @@
 import numpy as np
 from lib.config import cfg
 import os
+import sys
 import imageio
 from lib.utils import img_utils
 from skimage.metrics import structural_similarity as ssim
@@ -14,6 +15,55 @@ import cv2
 import torchvision.transforms as T
 from PIL import Image
 import matplotlib.pyplot as plt
+
+
+def write_cam(file, ixt, ext):
+    f = open(file, "w")
+    f.write('extrinsic\n')
+    for i in range(0, 4):
+        for j in range(0, 4):
+            f.write(str(ext[i][j]) + ' ')
+        f.write('\n')
+    f.write('\n')
+
+    f.write('intrinsic\n')
+    for i in range(0, 3):
+        for j in range(0, 3):
+            f.write(str(ixt[i][j]) + ' ')
+        f.write('\n')
+
+    f.close()
+
+
+def save_pfm(filename, image, scale=1):
+    file = open(filename, "wb")
+    color = None
+
+    image = np.flipud(image)
+
+    if image.dtype.name != 'float32':
+        raise Exception('Image dtype must be float32.')
+
+    if len(image.shape) == 3 and image.shape[2] == 3:  # color image
+        color = True
+    elif len(image.shape) == 2 or len(image.shape) == 3 and image.shape[2] == 1:  # greyscale
+        color = False
+    else:
+        raise Exception('Image must have H x W x 3, H x W x 1 or H x W dimensions.')
+
+    file.write('PF\n'.encode('utf-8') if color else 'Pf\n'.encode('utf-8'))
+    file.write('{} {}\n'.format(image.shape[1], image.shape[0]).encode('utf-8'))
+
+    endian = image.dtype.byteorder
+
+    if endian == '<' or endian == '=' and sys.byteorder == 'little':
+        scale = -scale
+
+    file.write(('%f\n' % scale).encode('utf-8'))
+
+    image.tofile(file)
+    file.close()
+
 
 def unpreprocess(data, shape=(1, 1, 3, 1, 1), render_scale=1.):
     device = data.device
@@ -93,19 +143,48 @@ class Evaluator:
                     self.scene_ssims[batch['meta']['scene'][b]+f'_level{i}'] = []
                     self.scene_lpips[batch['meta']['scene'][b]+f'_level{i}'] = []
                 if cfg.save_result and i == 1:
-                    # #### depth maps:
-                    # nerf_depth = output['depth_level1'].cpu().numpy()[b].reshape((h, w))
-                    # depth_minmax = [
-                    #     batch["near_far"].min().detach().cpu().numpy(),
-                    #     batch["near_far"].max().detach().cpu().numpy(),
-                    # ]
-                    # rendered_depth_vis, _ = visualize_depth(nerf_depth, depth_minmax)
-                    # rendered_depth_vis = rendered_depth_vis.permute(1,2,0).detach().cpu().numpy()
-                    # img = rendered_depth_vis#* masks[0][...,None]
-                    
                     img = img_utils.horizon_concate(gt_rgb[b], pred_rgb[b])
                     img_path = os.path.join(cfg.result_dir, '{}_{}_{}.png'.format(batch['meta']['scene'][b], batch['meta']['tar_view'][b].item(), batch['meta']['frame_id'][b].item()))
                     imageio.imwrite(img_path, (img*255.).astype(np.uint8))
+                    
+                    if cfg.save_ply:
+                        dataset_name = cfg.train_dataset_module.split('.')[-2]
+                        ply_dir = os.path.join(cfg.result_dir, 'pointclouds', dataset_name)
+                        os.makedirs(ply_dir, exist_ok = True)
+                        scan_dir = os.path.join(ply_dir, batch['meta']['scene'][0])
+                        os.makedirs(scan_dir, exist_ok = True)
+                        img_dir = os.path.join(scan_dir, 'images')
+                        os.makedirs(img_dir, exist_ok = True)
+                        img_path = os.path.join(img_dir, '{}_{}_{}.png'.format(batch['meta']['scene'][0], batch['meta']['tar_view'][0].item(), batch['meta']['frame_id'][0].item()))
+                        img = output[f'rgb_level{i}'].reshape(B, h, w, 3).detach().cpu().numpy()
+                        img = (img[b]*255).astype(np.uint8)
+                        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+                        cv2.imwrite(img_path, img)
+                        
+                        cam_dir = os.path.join(scan_dir, 'cam')
+                        os.makedirs(cam_dir, exist_ok = True)
+                        cam_path = os.path.join(cam_dir, '{}_{}_{}.txt'.format(batch['meta']['scene'][0], batch['meta']['tar_view'][0].item(), batch['meta']['frame_id'][0].item()))
+                        
+                        ixt = batch['tar_ixt'].detach().cpu().numpy()[0]
+                        ext = batch['tar_ext'].detach().cpu().numpy()[0]
+                        write_cam(cam_path, ixt, ext)
+                        
+                        nerf_depth = output['depth_level1'].cpu().numpy()[b].reshape((h, w))
+                        depth = nerf_depth
+                        depth_dir = os.path.join(scan_dir, 'depth')
+                        os.makedirs(depth_dir, exist_ok = True)
+                        depth_path = os.path.join(depth_dir, '{}_{}_{}.pfm'.format(batch['meta']['scene'][0], batch['meta']['tar_view'][0].item(), batch['meta']['frame_id'][0].item()))
+                        save_pfm(depth_path, depth)
+                        
+                        depth_minmax = [
+                            batch["near_far"].min().detach().cpu().numpy(),
+                            batch["near_far"].max().detach().cpu().numpy(),
+                        ]
+                        rendered_depth_vis, _ = visualize_depth(depth, depth_minmax)
+                        rendered_depth_vis = rendered_depth_vis.permute(1,2,0).detach().cpu().numpy()
+                        depth_vis_path = os.path.join(depth_dir, '{}_{}_{}.png'.format(batch['meta']['scene'][0], batch['meta']['tar_view'][0].item(), batch['meta']['frame_id'][0].item()))
+                        imageio.imwrite(depth_vis_path, (rendered_depth_vis*255.).astype(np.uint8))
+                    
                     
                 mask = masks[b] == 1
                 gt_rgb[b][mask==False] = 0.
