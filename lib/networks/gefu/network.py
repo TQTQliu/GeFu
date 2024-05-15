@@ -145,7 +145,6 @@ class Network(nn.Module):
         B, _, _, H_img, W_img = batch['src_inps'].shape
         pred_rgb_nb_list = []
         if not cfg.save_video:
-            B, _, _, H_img, W_img = batch['src_inps'].shape
             feats = self.forward_feat(batch['src_inps'])
             ret = {}
             depth, std, near_far = None, None, None
