@@ -98,12 +98,12 @@ The rendering images will be saved in ```result/gefu/dtu_pretrain```. Add the ``
 #### Evaluate the pretrained model on Real Forward-facing
 
 ```
-python run.py --type evaluate --cfg_file configs/gefu/nerf_eval.yaml
+python run.py --type evaluate --cfg_file configs/gefu/llff_eval.yaml
 ```
 
 #### Evaluate the pretrained model on NeRF Synthetic
 ```
-python run.py --type evaluate --cfg_file configs/gefu/llff_eval.yaml
+python run.py --type evaluate --cfg_file configs/gefu/nerf_eval.yaml
 ```
 
 
