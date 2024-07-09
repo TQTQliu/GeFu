@@ -5,7 +5,7 @@ PyTorch implementation of paper "Geometry-aware Reconstruction and Fusion-refine
 > [Geometry-aware Reconstruction and Fusion-refined Rendering for Generalizable Neural Radiance Fields](https://arxiv.org/abs/2404.17528)  
 > Tianqi Liu, Xinyi Ye, Min Shi, Zihao Huang, Zhiyu Pan, Zhan Peng, Zhiguo Cao* \
 > CVPR 2024  
-> [project page](https://gefucvpr24.github.io/) | [paper](https://arxiv.org/abs/2404.17528) | [model](https://drive.google.com/drive/folders/1pCCOLUj2fNAbp0ZXj7_tEPfF1vZvMbh-?usp=drive_link) | [Poster](https://cvpr.thecvf.com/virtual/2024/poster/29889)
+> [project page](https://gefucvpr24.github.io/) | [paper](https://arxiv.org/abs/2404.17528) | [model](https://drive.google.com/drive/folders/1pCCOLUj2fNAbp0ZXj7_tEPfF1vZvMbh-?usp=drive_link) | [poster](https://cvpr.thecvf.com/virtual/2024/poster/29889)
 
 
 ## Introduction
