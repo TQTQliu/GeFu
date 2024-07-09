@@ -5,7 +5,7 @@ PyTorch implementation of paper "Geometry-aware Reconstruction and Fusion-refine
 > [Geometry-aware Reconstruction and Fusion-refined Rendering for Generalizable Neural Radiance Fields](https://arxiv.org/abs/2404.17528)  
 > Tianqi Liu, Xinyi Ye, Min Shi, Zihao Huang, Zhiyu Pan, Zhan Peng, Zhiguo Cao* \
 > CVPR 2024  
-> [project page](https://gefucvpr24.github.io/) | [paper](https://arxiv.org/abs/2404.17528) | [model](https://drive.google.com/drive/folders/1pCCOLUj2fNAbp0ZXj7_tEPfF1vZvMbh-?usp=drive_link) 
+> [project page](https://gefucvpr24.github.io/) | [paper](https://arxiv.org/abs/2404.17528) | [model](https://drive.google.com/drive/folders/1pCCOLUj2fNAbp0ZXj7_tEPfF1vZvMbh-?usp=drive_link) | [Poster](https://cvpr.thecvf.com/virtual/2024/poster/29889)
 
 
 ## Introduction
@@ -113,11 +113,13 @@ python run.py --type evaluate --cfg_file configs/gefu/nerf_eval.yaml
 If you find our work useful for your research, please cite our paper.
 
 ```
-@article{liu2024gefu,
-    title={Geometry-aware Reconstruction and Fusion-refined Rendering for Generalizable Neural Radiance Fields},
-    author={Liu, Tianqi and Ye, Xinyi and Shi, Min and Huang, Zihao and Pan, Zhiyu and Peng, Zhan and Cao, Zhiguo},
-    journal={arXiv preprint arXiv:2404.17528},
-    year={2024}
+@InProceedings{Liu_2024_CVPR,
+    author    = {Liu, Tianqi and Ye, Xinyi and Shi, Min and Huang, Zihao and Pan, Zhiyu and Peng, Zhan and Cao, Zhiguo},
+    title     = {Geometry-aware Reconstruction and Fusion-refined Rendering for Generalizable Neural Radiance Fields},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2024},
+    pages     = {7654-7663}
 }
 ```
 
